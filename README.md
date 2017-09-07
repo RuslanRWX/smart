@@ -1,4 +1,4 @@
-### SMART monitoring  with  Smartmontools, it also works with adaptec raid and megaRaid
+### SMART monitoring  with  smartmontools, it also works with Adaptec raid and MegaRaid
 
 ##### Install  
 
