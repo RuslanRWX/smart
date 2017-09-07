@@ -1,6 +1,6 @@
-# SMART monitoring  with  Smartmontools, it also works with adaptec raid and megaRaid
+### SMART monitoring  with  Smartmontools, it also works with adaptec raid and megaRaid
 
-## Install  
+## Install form source, you can follow below commands. 
 
 ```
 git clone https://github.com/ruslansvs2/smart.git <br>
