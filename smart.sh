@@ -74,7 +74,6 @@ geom disk list | grep 'Geom name' | sed "s/\ //g" | awk -F":" 'BEGIN { print "\{
 
 	             } 
               fi
- exit 0 
         ;;
 esac
 }
@@ -85,7 +84,6 @@ RmComma() {
        	sed "${var}s/,//" ${tmpdir}/disk.smart.tmp > ${tmpdir}/disk.smart.txt 
         	
 chown zabbix:zabbix  ${tmpdir}/disk.smart.txt
-echo 0
 exit 0
 
 }
