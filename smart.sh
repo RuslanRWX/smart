@@ -70,8 +70,6 @@ geom disk list | grep 'Geom name' | sed "s/\ //g" | awk -F":" 'BEGIN { print "\{
 	       arcconf GETCONFIG 1 | grep "Reported Location" | awk '{print $7}' | awk 'BEGIN { print "{\n \"data\":[" }  { print  "{\"{#DISK}\":\""$1"\"},"  }  END  { print " ]\n}" }'  > ${tmpdir}/disk.smart.tmp  && echo 0 || echo 1
     		     }
        		else {
-                      dcount=`ls -1 /dev | egrep '^sa[a-z]$|^sd[a-z]$' | wc -l` 
-                      line=`expr $dcount + 2`
 	   ls -1 /dev | egrep '^sa[a-z]$|^sd[a-z]$' | awk 'BEGIN { print "{\n \"data\":[" }  { print  "{\"{#DISK}\":\""$1"\"},"  }  END  { print " ]\n}" }' | sed "${line}s/,//"  > ${tmpdir}/disk.smart.tmp && echo 0 || echo 1
 
 	             } 
@@ -79,8 +77,6 @@ geom disk list | grep 'Geom name' | sed "s/\ //g" | awk -F":" 'BEGIN { print "\{
  exit 0 
         ;;
 esac
-echo 0
-exit 0
 }
 
 RmComma() {
@@ -89,6 +85,8 @@ RmComma() {
        	sed "${var}s/,//" ${tmpdir}/disk.smart.tmp > ${tmpdir}/disk.smart.txt 
         	
 chown zabbix:zabbix  ${tmpdir}/disk.smart.txt
+echo 0
+exit 0
 
 }
 
