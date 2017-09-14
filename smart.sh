@@ -53,36 +53,45 @@ case $hostname in
 		if [ -c "/dev/mfid0" ]
 		then { 
 		     kldstat | grep mfip.ko >> /dev/null ||  kldload mfip.ko
-		     ls /dev/pass* | awk -F'/' 'BEGIN { print "\{\n \"data\":[" }  { print  "\{\"{#DISK}\":\""$3"\"},"  }  END  { print " ]\n\}" }' > ${tmpdir}/disk.smart.txt
+		     ls /dev/pass* | awk -F'/' 'BEGIN { print "\{\n \"data\":[" }  { print  "\{\"{#DISK}\":\""$3"\"},"  }  END  { print " ]\n\}" }' > ${tmpdir}/disk.smart.tmp
 		     }
 		else {
-geom disk list | grep 'Geom name' | sed "s/\ //g" | awk -F":" 'BEGIN { print "\{\n \"data\":[" }  { print  "\{\"{#DISK}\":\""$2"\"},"  }  END  { print " ]\n\}" }' > ${tmpdir}/disk.smart.txt
+geom disk list | grep 'Geom name' | sed "s/\ //g" | awk -F":" 'BEGIN { print "\{\n \"data\":[" }  { print  "\{\"{#DISK}\":\""$2"\"},"  }  END  { print " ]\n\}" }' > ${tmpdir}/disk.smart.tmp
                      }
 		fi
 ;;
 	"Linux")
                 if [ "`lspci | grep -i "RAID MegaRAID"`" != "" ]
 	       	then {  
-	       megacli -pdlist -a0 | grep 'Device Id' | awk 'BEGIN { print "{\n \"data\":[" }  { print  "{\"{#DISK}\":\""$3"\"},"  }  END  { print " ]\n}" }'  > ${tmpdir}/disk.smart.txt && echo 0 || echo 1
+	       megacli -pdlist -a0 | grep 'Device Id' | awk 'BEGIN { print "{\n \"data\":[" }  { print  "{\"{#DISK}\":\""$3"\"},"  }  END  { print " ]\n}" }'  > ${tmpdir}/disk.smart.tmp && echo 0 || echo 1
      		     }
               elif [ "`lspci | grep -i Adaptec`" != "" ]
 	       	then {  
-	       arcconf GETCONFIG 1 | grep "Reported Location" | awk '{print $7}' | awk 'BEGIN { print "{\n \"data\":[" }  { print  "{\"{#DISK}\":\""$1"\"},"  }  END  { print " ]\n}" }'  > ${tmpdir}/disk.smart.txt  && echo 0 || echo 1
+	       arcconf GETCONFIG 1 | grep "Reported Location" | awk '{print $7}' | awk 'BEGIN { print "{\n \"data\":[" }  { print  "{\"{#DISK}\":\""$1"\"},"  }  END  { print " ]\n}" }'  > ${tmpdir}/disk.smart.tmp  && echo 0 || echo 1
     		     }
        		else {
                       dcount=`ls -1 /dev | egrep '^sa[a-z]$|^sd[a-z]$' | wc -l` 
                       line=`expr $dcount + 2`
-	   ls -1 /dev | egrep '^sa[a-z]$|^sd[a-z]$' | awk 'BEGIN { print "{\n \"data\":[" }  { print  "{\"{#DISK}\":\""$1"\"},"  }  END  { print " ]\n}" }' | sed "${line}s/,//"  > ${tmpdir}/disk.smart.txt && echo 0 || echo 1
+	   ls -1 /dev | egrep '^sa[a-z]$|^sd[a-z]$' | awk 'BEGIN { print "{\n \"data\":[" }  { print  "{\"{#DISK}\":\""$1"\"},"  }  END  { print " ]\n}" }' | sed "${line}s/,//"  > ${tmpdir}/disk.smart.tmp && echo 0 || echo 1
 
 	             } 
               fi
  exit 0 
         ;;
 esac
-chown zabbix:zabbix  ${tmpdir}/disk.smart.txt
 echo 0
 exit 0
 }
+
+RmComma() {
+	var0=`wc -l < ${tmpdir}/disk.smart.tmp`
+	var=`echo "${var0} - 2" | bc`
+       	sed "${var}s/,//" ${tmpdir}/disk.smart.tmp > ${tmpdir}/disk.smart.txt 
+        	
+chown zabbix:zabbix  ${tmpdir}/disk.smart.txt
+
+}
+
 
 ShowParm () {
 
@@ -131,6 +140,7 @@ FindFunc
 if [ $1 = "create"  ]; then 
 	{
 CreateDisk 
+RmComma
 } fi
 
 SmartStart
