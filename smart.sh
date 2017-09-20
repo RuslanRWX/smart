@@ -5,7 +5,6 @@ PATH="/sbin:/bin:/usr/sbin:/usr/bin:/root/bin:/usr/local/sbin:/usr/local/bin"
 hostname=`uname`
 
 tmpdir='/etc/zabbix/tmp'
-DiskPath="/dev/sda"
 
 
 FindFunc () {
@@ -30,18 +29,22 @@ case $hostname in
 	 }; fi
 ;;
 	"Linux")
+	Disks=`$(lsblk -S | grep "disk" |  awk '{print $1}' `
+	for $Disk in $Disks
+	   do
                 if [ "`lspci | grep -i "RAID MegaRAID"`" != "" ]
 	       	    then {  
-                           if [ ! -f /tmp/smartres.$disk ]; then { smartctl -a -d megaraid,$disk  $DiskPath  > /tmp/smartres.$disk; }; fi
+                           if [ ! -f /tmp/smartres.$Disk ]; then { smartctl -a -d megaraid,$Disk  $Disk  > /tmp/smartres.$Disk; }; fi
      		         }
                 elif [ "`lspci | grep -i Adaptec`" != "" ]
 	       	     then { 
-	                   if [ ! -f /tmp/smartres.$disk ]; then { smartctl -a -d aacraid,0,0,$disk  $DiskPath  > /tmp/smartres.$disk; }; fi
+	                   if [ ! -f /tmp/smartres.$Disk ]; then { smartctl -a -d aacraid,0,0,$disk  $Disk  > /tmp/smartres.$Disk; }; fi
     		          }
        		else { 
 	                   if [ ! -f /tmp/smartres.$disk ]; then { smartctl -a /dev/$disk > /tmp/smartres.$disk;  }; fi
 	             } 
-              fi
+                fi
+	  done
      
         ;;
 esac
