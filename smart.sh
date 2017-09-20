@@ -29,22 +29,19 @@ case $hostname in
 	 }; fi
 ;;
 	"Linux")
-	Disks=`$(lsblk -S | grep "disk" |  awk '{print $1}' `
-	for $Disk in $Disks
-	   do
-                if [ "`lspci | grep -i "RAID MegaRAID"`" != "" ]
+	DiskPath="/dev/sda"
+                if [ "`lspci | grep -i "MegaRAID"`" != "" ]
 	       	    then {  
-                           if [ ! -f /tmp/smartres.$Disk ]; then { smartctl -a -d megaraid,$Disk  $Disk  > /tmp/smartres.$Disk; }; fi
+                           if [ ! -f /tmp/smartres.$Disk ]; then { smartctl -a -d megaraid,$Disk  $DiskPath  > /tmp/smartres.$Disk; }; fi
      		         }
                 elif [ "`lspci | grep -i Adaptec`" != "" ]
 	       	     then { 
-	                   if [ ! -f /tmp/smartres.$Disk ]; then { smartctl -a -d aacraid,0,0,$disk  $Disk  > /tmp/smartres.$Disk; }; fi
+	                   if [ ! -f /tmp/smartres.$Disk ]; then { smartctl -a -d aacraid,0,0,$disk  $DiskPath  > /tmp/smartres.$Disk; }; fi
     		          }
        		else { 
 	                   if [ ! -f /tmp/smartres.$disk ]; then { smartctl -a /dev/$disk > /tmp/smartres.$disk;  }; fi
 	             } 
                 fi
-	  done
      
         ;;
 esac
