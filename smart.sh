@@ -61,7 +61,7 @@ geom disk list | grep 'Geom name' | sed "s/\ //g" | awk -F":" 'BEGIN { print "\{
 		fi
 ;;
 	"Linux")
-                if [ "`lspci | grep -i "RAID MegaRAID"`" != "" ]
+                if [ "`lspci | grep -i "MegaRAID"`" != "" ]
 	       	then {  
 	       megacli -pdlist -a0 | grep 'Device Id' | awk 'BEGIN { print "{\n \"data\":[" }  { print  "{\"{#DISK}\":\""$3"\"},"  }  END  { print " ]\n}" }'  > ${tmpdir}/disk.smart.tmp && echo 0 || echo 1
      		     }
