@@ -101,7 +101,7 @@ case $parm in
 	result=`grep -w "Product" /tmp/smartres.$disk | awk -F":" '{ print $2 }'` 
 ;;
 	"Health")
-	result=`grep -w "SMART Health Status" /tmp/smartres.$disk | awk '{ print $2 }'` 
+	result=`grep -w "SMART Health Status" /tmp/smartres.$disk | awk '{ print $4 }'` 
 ;;
 	"read")
 	result=`grep -w "read:" /tmp/smartres.$disk | awk '{ print $8 }'` 
